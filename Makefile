@@ -12,4 +12,4 @@ client_tcp: cliente_tcp.c dependencies/tinyexpr.o
 
 # Alvo para limpar os arquivos temporários
 clean:
-	rm -f servidor client dependencies/tinyexpr.o
+	rm -f servidor cliente dependencies/tinyexpr.o
