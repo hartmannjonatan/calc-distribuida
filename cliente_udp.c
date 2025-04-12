@@ -7,6 +7,7 @@
 
 #define PORT 6000
 
+// todo: implementação futura
 int main() {
     int sockfd;
     struct sockaddr_in serv_addr;

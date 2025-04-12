@@ -7,6 +7,7 @@
 
 #define PORT 6000
 
+// todo: implementação futura
 int main() {
     int server_fd;
     char buffer[1024];
