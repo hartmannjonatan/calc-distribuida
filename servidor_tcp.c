@@ -35,6 +35,15 @@ int main()
   bind(server_sockfd, (struct sockaddr *)&server_address, server_len);
 	listen(server_sockfd, 5);
 
+  struct sockaddr_in local_address;
+  socklen_t local_len = sizeof(local_address);
+  getsockname(server_sockfd, (struct sockaddr *)&local_address, &local_len);
+
+  char ip_str[INET_ADDRSTRLEN];
+  inet_ntop(AF_INET, &local_address.sin_addr, ip_str, sizeof(ip_str));
+
+  printf("Servidor iniciado em %s\n", ip_str);
+
   signal(SIGINT, close_connection);
   printf("Server waiting operations\n");
 	while (1) {

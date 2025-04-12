@@ -23,20 +23,26 @@ int main()
   struct sockaddr_in address;
   int result;
   char operation[MAX_LEN_OPERATION];
-
-  
+  char server_ip[100];
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   
+  // Solicita o IP do servidor ao usuário
+  printf("Digite o endereço IP do servidor: ");
+  fgets(server_ip, sizeof(server_ip), stdin);
+  server_ip[strcspn(server_ip, "\n")] = 0; // Remove o '\n' do final
+
+  // Define os dados do servidor
   address.sin_family = AF_INET;
-  address.sin_addr.s_addr = htonl(INADDR_ANY);
   address.sin_port = htons(9734);
-  
+  inet_pton(AF_INET, server_ip, &address.sin_addr); // Converte string IP para binário
+
   len = sizeof(address);
   result = connect(sockfd, (struct sockaddr *)&address, len);
   if(result == -1) {
     perror("Não foi possível conectar com o servidor de operações!");
-		exit(1);
+    exit(1);
   }
+
   signal(SIGINT, close_connection);
   printf("Conexão iniciada!\n");
   
@@ -69,7 +75,7 @@ void process_resultado(char tipo, double resultado)
   if(tipo == 'E'){
     printf("Operação inválida!\n\n");
   } else {
-    printf("%.2f\n\n", resultado);
+    printf("%.4f\n\n", resultado);
   }
 }
 
