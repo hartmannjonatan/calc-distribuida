@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <signal.h>
+#include <ifaddrs.h>
 #include "dependencies/tinyexpr.h"
 
 struct data_result{
@@ -15,9 +16,11 @@ struct data_result{
 };
 
 const int MAX_LEN_OPERATION = 100;
+const int PORTA = 9734;
 
 struct data_result calc_operation(const char* data);
 int close_connection(int sig);
+char* get_ipv4();
 int server_sockfd;
 
 int main()
@@ -30,17 +33,12 @@ int main()
   server_sockfd = socket(AF_INET, SOCK_STREAM, 0);
   server_address.sin_family = AF_INET;
   server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-  server_address.sin_port = htons(9734);
+  server_address.sin_port = htons(PORTA);
   server_len = sizeof(server_address);
   bind(server_sockfd, (struct sockaddr *)&server_address, server_len);
 	listen(server_sockfd, 5);
 
-  struct sockaddr_in local_address;
-  socklen_t local_len = sizeof(local_address);
-  getsockname(server_sockfd, (struct sockaddr *)&local_address, &local_len);
-
-  char ip_str[INET_ADDRSTRLEN];
-  inet_ntop(AF_INET, &local_address.sin_addr, ip_str, sizeof(ip_str));
+  char* ip_str = get_ipv4();
 
   printf("Servidor iniciado em %s\n", ip_str);
 
@@ -103,4 +101,33 @@ int close_connection(int sig){
   close(server_sockfd);
   printf("\nServidor encerrado.\n");
   exit(0);
+}
+
+char* get_ipv4() {
+  static char ip_str[INET_ADDRSTRLEN] = "127.0.0.1"; // fallback
+
+  struct ifaddrs *ifaddr, *ifa;
+  if (getifaddrs(&ifaddr) == -1) {
+      perror("getifaddrs");
+      return ip_str;
+  }
+
+  for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+      if (ifa->ifa_addr == NULL) continue;
+
+      if (ifa->ifa_addr->sa_family == AF_INET) {
+          struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
+          char temp[INET_ADDRSTRLEN];
+          inet_ntop(AF_INET, &sa->sin_addr, temp, sizeof(temp));
+
+          // Ignora 127.0.0.1 (loopback), pega o primeiro que não for
+          if (strcmp(temp, "127.0.0.1") != 0) {
+              strncpy(ip_str, temp, INET_ADDRSTRLEN);
+              break;
+          }
+      }
+  }
+
+  freeifaddrs(ifaddr);
+  return ip_str;
 }

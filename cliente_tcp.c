@@ -14,6 +14,7 @@ struct data_result{
 };
 int sockfd;
 const int MAX_LEN_OPERATION = 100;
+const int PORTA = 9734;
 
 int close_connection(int sig);
 
@@ -33,7 +34,7 @@ int main()
 
   // Define os dados do servidor
   address.sin_family = AF_INET;
-  address.sin_port = htons(9734);
+  address.sin_port = htons(PORTA);
   inet_pton(AF_INET, server_ip, &address.sin_addr); // Converte string IP para binário
 
   len = sizeof(address);
