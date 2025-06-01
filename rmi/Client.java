@@ -15,20 +15,24 @@ public class Client {
         System.out.print("Digite o endereço ip do servidor RMI: ");
         String ip = in.next();
 	    	try {  
+                System.setProperty("java.rmi.server.hostname", ipLocal);
 	            calculator =(CalculatorInterface)Naming.lookup("rmi://"+ip+"/Calculator");
                 System.out.println("Conectado ao servidor RMI!");
 	    	}
 	        catch(RemoteException e ) {  
 	            System.out.println();  
-	            System.out.println( "RemoteException: " + e.toString() );  
+	            System.out.println( "RemoteException: " + e.toString() );
+                System.exit(1);
 	        }  
 	        catch(NotBoundException e ) {  
 	            System.out.println();  
 	            System.out.println( "NotBoundException: " + e.toString() );  
+                System.exit(1);  
 	        }  
 	        catch(Exception e ) {  
 	            System.out.println();  
 	            System.out.println( "Exception: " + e.toString() );  
+                System.exit(1);  
 	        }
 	}
 	
@@ -47,7 +51,7 @@ public class Client {
                 try {
                     System.out.println(calculator.calculate(operation)+"\n");
                 } catch(Exception e) {
-                    System.out.println("Operação Inválida!\n");
+                    System.out.println("Operação Inválida!\n"+e);
                 }
 			}
         System.out.println("Finalizando cliente RMI.");
