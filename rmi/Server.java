@@ -7,6 +7,7 @@ public class Server {
         try {
             // Obtém o IP local da máquina
             String ip = IPUtil.getLocalIPv4();
+            System.setProperty("java.rmi.server.hostname", ip);
             System.out.println("IP local (IPv4): " + ip);
 
             // Inicia o RMI Registry na porta 1099

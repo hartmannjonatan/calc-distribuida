@@ -15,7 +15,6 @@ public class Client {
         System.out.print("Digite o endereço ip do servidor RMI: ");
         String ip = in.next();
 	    	try {  
-                System.setProperty("java.rmi.server.hostname", ipLocal);
 	            calculator =(CalculatorInterface)Naming.lookup("rmi://"+ip+"/Calculator");
                 System.out.println("Conectado ao servidor RMI!");
 	    	}
