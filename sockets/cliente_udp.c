@@ -1,6 +1,5 @@
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -27,11 +26,6 @@ int main()
   char operation[MAX_LEN_OPERATION];
   char server_ip[100];
   sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-
-  struct timeval tv;
-  tv.tv_sec = 5; // timeout de 5 segundos
-  tv.tv_usec = 0;
-  setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)); 
   
   // Solicita o IP do servidor ao usuário
   printf("Digite o endereço IP do servidor: ");
@@ -57,7 +51,6 @@ int main()
     ssize_t sent = sendto(sockfd, operation, op_len, 0, (struct sockaddr*)&address, sizeof(address));
     if (sent < 0) {
         perror("Envio falhou!");
-        printf("\n");
         continue;
     }
 
@@ -67,7 +60,7 @@ int main()
     ssize_t received = recvfrom(sockfd, &resultado, sizeof(resultado), 0, (struct sockaddr*)&address, &addr_len);
     if (received < 0) {
         perror("Recebimento falhou!");
-        printf("\n");
+        close(sockfd);
         continue;
     }
     process_resultado(resultado.tipo, resultado.resultado);
