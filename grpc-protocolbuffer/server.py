@@ -4,6 +4,8 @@ import calculator_pb2
 import calculator_pb2_grpc
 import expr
 import socket
+import signal
+import sys
 
 class CalculatorServicer(calculator_pb2_grpc.CalculatorServicer):
     def Calculate(self, request, context):
@@ -28,6 +30,14 @@ def serve():
     calculator_pb2_grpc.add_CalculatorServicer_to_server(CalculatorServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
+
+    def handle_sigint(sig, frame):
+        print("\nServidor encerrado!")
+        server.stop(grace=3)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, handle_sigint)
+
     print(f"Servidor rodando em {get_local_ip()}:50051")
     server.wait_for_termination()
 
