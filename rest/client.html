@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora REST</title>
+</head>
+<body>
+  <h1>Calculadora REST</h1>
+
+  <label>IP do servidor:</label>
+  <input type="text" id="ip" placeholder="ex: 192.168.1.10"><br><br>
+
+  <label>Operação:</label>
+  <input type="text" id="operation" placeholder="ex: 2 + 3 * 4"><br><br>
+
+  <button onclick="enviar()">Calcular</button>
+
+  <h3 id="resultado"></h3>
+
+  <script>
+    function enviar() {
+      const ip = document.getElementById('ip').value.trim();
+      const operation = document.getElementById('operation').value.trim();
+      const url = `http://${ip}:8000/calculate`;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ operation })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.type === "Success") {
+          document.getElementById('resultado').innerText = `Resultado: ${data.result}`;
+        } else {
+          document.getElementById('resultado').innerText = "Operação inválida.";
+        }
+      })
+      .catch(err => {
+        document.getElementById('resultado').innerText = "Erro na requisição.";
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
